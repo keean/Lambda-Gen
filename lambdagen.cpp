@@ -10,7 +10,11 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 
-struct xor_shift_plus_128 {
+class xor_shift_plus_128 {
+    uint64_t s0;
+    uint64_t s1;
+
+public:
     xor_shift_plus_128(xor_shift_plus_128 const&) = delete;
     xor_shift_plus_128& operator= (xor_shift_plus_128 const&) = delete;
     xor_shift_plus_128() {
@@ -36,18 +40,15 @@ struct xor_shift_plus_128 {
         l1 ^= l1 << 23;
         return (s1 = (l1 ^ l0 ^ (l1 >> 17) ^ (l0 >> 26))) + l0;
     }
-private:
-    uint64_t s0;
-    uint64_t s1;
 };
 
 template <typename Random>
-double rand_01(Random&& r) {
+double rand_01(Random& r) {
     return static_cast<double>(r()) / numeric_limits<uint64_t>::max();
 }
 
 template <typename Random>
-void unrank(Random&& r, int const i) {
+void unrank(Random& r, int const i) {
     static double constexpr p_var = 0.3703026;
     static double constexpr p_abs = 0.25939476;
     double const n = rand_01(r);
