@@ -9,6 +9,7 @@
 using namespace std;
 
 //-----------------------------------------------------------------------------
+// XorShift128+ PRNG
 
 class xor_shift_plus_128 {
     uint64_t s0;
@@ -45,9 +46,22 @@ public:
     }
 };
 
+// generate double in range 0.0 - 1.0 with a uniform distribution.
 template <typename Random>
 double rand_01(Random& r) {
     return static_cast<double>(r()) / numeric_limits<uint64_t>::max();
+}
+
+// generate integer in range 0 - "rng" with a uniform distribution.
+template <typename Random>
+uint64_t range(Random& prng, uint64_t rng) {
+    uint64_t const lim = rng * (numeric_limits<uint64_t>::max() / rng);
+    uint64_t x;
+    do {
+       x = prng();
+    } while (x >= lim);
+    
+    return x % rng;
 }
 
 template <typename Random>
@@ -63,7 +77,7 @@ class lambdagen {
         double const n = rand_01(prng);
 
         if (i > 10000 || (i > 0 && n < p_var)) {
-            cout << "t" << prng() % i;
+            cout << "t" << range(prng, i);
         } else if (n < p_var + p_abs) {
             cout << "(" << abs1 << i << abs2;
             unrank(i + 1);
